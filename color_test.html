@@ -1,0 +1,38 @@
+<head>
+    <script src="//unpkg.com/d3"></script>
+    <script src="//unpkg.com/sunburst-chart"></script>
+    <style>body { margin: 0 }</style>
+</head>
+<body>
+    <div id="chart"></div>
+    <script>
+        // Custom color palette
+        const customColors = d3.scaleOrdinal([
+            "#7C0A02", // Deep Garnet
+            "#A42A04", // Crimson Garnet
+            "#C1440E", // Soft Garnet
+            "#E86A49", // Light Garnet
+            "#333333", // Charcoal Grey
+            "#5A5A5A", // Slate Grey
+            "#B0B0B0", // Silver Grey
+            "#DADADA"  // Light Grey
+        ]);
+
+        fetch('updated_index.json').then(res => res.json()).then(data => {
+            const colorScale = d3.scaleOrdinal()
+                                 .domain(d3.range(data.length))
+                                 .range(customColors.range());
+
+            Sunburst()
+                .data(data)
+                .label('name')
+                .size('value')
+                .excludeRoot([true])
+                .minSliceAngle([.0002])
+                .maxLevels([6])
+                .color((d, parent) => parent ? colorScale(parent.depth) : customColors(0))
+                .tooltipContent((d, node) => `Size: <i>${node.value}</i>`)
+                (document.getElementById('chart'));
+        });
+    </script>
+</body>
